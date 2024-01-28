@@ -1,8 +1,11 @@
 package jpabook.jpashop.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.aspectj.weaver.ast.Or;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @Table(name="orders") //order는 여러군데 사용되기때문에 이름 변경
 @Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
     @Id @GeneratedValue
@@ -72,5 +76,54 @@ public class Order {
     }
 
     //연관관계 메서드의 경우 컨트롤 하는쪽이 들고있는게 좋음.
+
+    //== 생성 메서드 == //
+    public static Order createOrder(Member member, Delivery delivery,
+                                          OrderItem... orderItems){ //...으로 여러개를 넘길 수 있음.
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for(OrderItem orderItem : orderItems){
+            order.addOrderItem(orderItem);
+        }
+
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+
+        return order;
+    }
+    //생성지점이 변경될떄, createOrder 만 변경하면됨.
+
+    //== 비지니스 로직 ==//
+    /**
+     * 주문 취소
+     */
+    public void cancel(){
+        if(delivery.getStatus() == DeliveryStatus.COMP){ //이미 배송완료
+            throw new IllegalStateException("이미 배송완료된 상품은 취소가 불가능합니다.");
+        }
+
+        this.setStatus(OrderStatus.CANCEL);
+        for (OrderItem orderItem : orderItems){
+            orderItem.cancel();
+        }
+        //jap의 장점 !! 원래 sql이라면 cancel 되었을때 일일히 쿼리를 날려줘야함.
+        //jap가 알아서 바뀐 변경포인트 더티체킹(변경내역감지) 해서 DB update가 날라감.
+    }
+
+    //==조회 로직==//
+    /** 전체 주문 가격 조회 */
+    public int getTotalPrice() {
+       /* int totalPrice = 0;
+        for (OrderItem orderItem : orderItems) {
+            totalPrice += orderItem.getTotalPrice();
+        }
+        return totalPrice;*/
+        //자바 8이라면
+        return orderItems.stream()
+                .mapToInt(OrderItem::getTotalPrice)
+                .sum();
+    }
+
 
 }
