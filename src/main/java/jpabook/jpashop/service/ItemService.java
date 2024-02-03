@@ -1,6 +1,7 @@
 package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.Item;
+import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,25 @@ public class ItemService {
     @Transactional
     public void saveItem(Item item){
         itemRepository.save(item);
+    }
+
+
+    /**
+     * 영속성 컨텍스트가 자동 변경
+     */
+    //1. 변경감지 기능 사용
+    @Transactional
+    public void updateItem(Long itemId, String name, int price, int stockQuantity) {
+        Item findItem = itemRepository.findOne(itemId);
+        findItem.setName(name);
+        findItem.setPrice(price);
+        findItem.setStockQuantity(stockQuantity);
+
+        //findItem 영속성 컨텍스트임.
+        //Transactional이 종료 후 커밋이 되면 Jap는 플러시를 날림
+        //영속성 컨텍스트 중 변경사항을 체크
+
+        //파라미터가 너무 많으면 DTO 만들어서 세팅하도록 하는게 좋음 (나은설계)
     }
 
     public List<Item> findItems() {
