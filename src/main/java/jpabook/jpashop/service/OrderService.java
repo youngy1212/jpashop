@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -22,6 +24,12 @@ public class OrderService {
      */
     @Transactional
     public Long order(Long memberId, Long itemId, int count){
+
+        //왜 여기서 조회하는거? 이미 controller단에서 조회해서넘어오면 안되나?
+        //가능하지만, 여기서 조회까지 진행하는 편이 좋음.
+        //영속성 상태로 진행할 수 있음.
+        //조회는 상관없음 하지만, 핵심 비지니스 로직 CUD의 경우 안에서 하는 편이 좋음
+        //영속성 상태에서 조회할 수 있기 때문에 (더티체킹)
 
         //엔티티 조회 (Id만 넘어오기 떄문)
         Member member = memberRepository.findOne(memberId);
@@ -56,12 +64,13 @@ public class OrderService {
         order.cancel(); //이미 비지니스 로직이 있기 때문
     }
 
-    /** 주문 검색 */
-    /*
+    /**
+     * 주문 검색
+     */
      public List<Order> findOrders(OrderSearch orderSearch) {
-     return orderRepository.findAll(orderSearch);
+        return orderRepository.findAllByString(orderSearch);
      }
-    */
+
 
 
 }
