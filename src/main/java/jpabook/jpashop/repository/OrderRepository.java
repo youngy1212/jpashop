@@ -82,6 +82,13 @@ public class OrderRepository {
     //** 제일 추천하는 것은 . Querydsl
 
 
-
+    //패치조인 order를 조인할때, member와 delivery도 같이 조회
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                "select o from Order o"+
+                        " join fetch o.member m"+
+                        " join fetch o.delivery d", Order.class
+        ).getResultList();
+    }
 
 }
