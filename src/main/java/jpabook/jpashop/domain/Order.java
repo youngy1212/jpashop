@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.aspectj.weaver.ast.Or;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class Order {
     //** PK와 가까운 테이블을 연관관계의 주인으로 잡아야 함.)
 
 
+    @BatchSize(size = 1000) //좀더 디테일하게 bathsize를 적용하고 싶다면 (컬렉션)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
     //CascadeType order를 저장하면 orderItems 같이 저장된다.
