@@ -7,6 +7,8 @@ import jpabook.jpashop.repository.order.query.OrderFlatDto;
 import jpabook.jpashop.repository.order.query.OrderItemQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
+import jpabook.jpashop.service.query.OrderDto;
+import jpabook.jpashop.service.query.OrderQuerySerice;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,13 +78,20 @@ public class OrderApiController {
         return collect;
     }
 
+//    @GetMapping("api/v3/orders")
+//    public List<OrderDto> ordersV3(){
+//        List<Order> orders = orderRepository.findAllWithItem();
+//        List<OrderDto> result = orders.stream()
+//                .map(o -> new OrderDto(o))
+//                .collect(toList());
+//        return result;
+//    }
+
+    private final OrderQuerySerice orderQuerySerice;
+
     @GetMapping("api/v3/orders")
-    public List<OrderDto> ordersV3(){
-        List<Order> orders = orderRepository.findAllWithItem();
-        List<OrderDto> result = orders.stream()
-                .map(o -> new OrderDto(o))
-                .collect(toList());
-        return result;
+    public List<jpabook.jpashop.service.query.OrderDto> ordersV3(){
+        return orderQuerySerice.ordersV3();
     }
 
     //페이징 + 한계돌파
