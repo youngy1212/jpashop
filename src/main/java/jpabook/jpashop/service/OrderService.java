@@ -32,7 +32,7 @@ public class OrderService {
         //영속성 상태에서 조회할 수 있기 때문에 (더티체킹)
 
         //엔티티 조회 (Id만 넘어오기 떄문)
-        Member member = memberRepository.findOne(memberId);
+        Member member = memberRepository.findById(memberId).get();
         Item item = itemRepository.findOne(itemId);
 
         //배송정보 생성
